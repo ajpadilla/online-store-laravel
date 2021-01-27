@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/apitest', function (Request $request) {
+    //return 'Hello World';
+    return response()->json(["status" => "FAILED", "status_message" => "algo"], 400)->header('Content-Type', 'application/json');
+});

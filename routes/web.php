@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('countries', ['as' => 'countries', 'uses' => 'App\Http\Controllers\TestController@index']);
+Route::get('show', ['as' => 'show', 'uses' => 'App\Http\Controllers\TestController@show']);
+Route::get('search', ['as' => 'search', 'uses' => 'App\Http\Controllers\TestController@search']);
+
