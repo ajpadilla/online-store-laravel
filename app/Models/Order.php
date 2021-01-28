@@ -22,4 +22,28 @@ class Order extends Model
         'product_id'
     ];
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function paymentAttempts()
+    {
+        return $this->hasMany(PaymentAttempt::class);
+    }
+
+    public function getFirstPaymentAttempt()
+    {
+        return $this->paymentAttempts()->count() ? $this->paymentAttempts()->first() : null;
+    }
+
+    public function getProductName()
+    {
+        return $this->product ?  $this->product->name : null;
+    }
+
+    public function getTotalProducts()
+    {
+        return $this->product()->count();
+    }
 }
