@@ -13,11 +13,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('welcome');
-});
+});*/
 
 Route::get('countries', ['as' => 'countries', 'uses' => 'App\Http\Controllers\TestController@index']);
 Route::get('show', ['as' => 'show', 'uses' => 'App\Http\Controllers\TestController@show']);
 Route::get('search', ['as' => 'search', 'uses' => 'App\Http\Controllers\TestController@search']);
 
+
+Route::get('login', ['as' => 'login', 'uses' => 'App\Http\Controllers\Auth\LoginController@show']);
+Route::post('authenticate', ['as' => 'authenticate', 'uses' => 'App\Http\Controllers\Auth\LoginController@store']);
+Route::get('logout', ['as' => 'logout', 'uses' => 'App\Http\Controllers\Auth\LoginController@logout']);
+
+Route::get('register', ['as' => 'register', 'uses' => 'App\Http\Controllers\Auth\RegisterController@show']);
+Route::post('register', ['as' => 'create_user', 'uses' => 'App\Http\Controllers\Auth\RegisterController@store']);
+
+
+Route::get('/', ['as' => 'dashboard', 'uses' => 'App\Http\Controllers\HomeController@dashboard']);
+
+Route::group(['namespace' => 'App\Http\Controllers', 'middleware' => ['auth']], function () {
+    Route::get('buy/product/{id}', ['as' => 'buy_product', 'uses' => 'ProductController@buy']);
+    Route::resource('orders', 'OrderController', ['only' => ['index']])->middleware('role:Admin');
+    Route::get('customer/order', ['as' => 'customer_order', 'uses' => 'CustomerOrderController@index']);
+    Route::get('pay_order', ['as' => 'pay_order', 'uses' => 'PaymentController@show']);
+});
