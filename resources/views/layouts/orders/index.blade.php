@@ -13,36 +13,36 @@
             <thead>
             <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Action</th>
-                <th style="width: 36px;"></th>
+                <th>Customer name</th>
+                <th>Customer email</th>
+                <th>Customer document number</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Product</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-            @forelse ($products as $product)
+            @forelse ($orders as $order)
                 <tr>
-                    <td>{{ $product->id }}</td>
-                    <td>{{ $product->name }}</td>
-                    <td>{{ $product->price }}</td>
+                    <td>{{ $order->id }}</td>
+                    <td>{{ $order->customer_name }}</td>
+                    <td>{{ $order->custom_email }}</td>
+                    <td>{{ $order->customer_document_number}}</td>
+                    <td>{{$order->amount}}</td>
+                    <td><a href="#" class="btn btn-primary"><i class="icon-pencil"></i>{{$order->status}}</a></td>
+                    <td>Product</td>
                     <td>
-                        <a href="#" class="btn btn-primary"><i class="icon-pencil"></i>Comprar</a>
+                        <a href="#" class="btn btn-primary"><i class="icon-pencil"></i>Show</a>
                     </td>
                 </tr>
             @empty
-                <p>No products</p>
+                <p>No orders</p>
             @endforelse
             </tbody>
         </table>
     </div>
     <div class="pagination">
-        <ul>
-            <li><a href="#">Prev</a></li>
-            <li><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">Next</a></li>
-        </ul>
+        {{ $orders->links() }}
     </div>
 @stop

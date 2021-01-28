@@ -11,6 +11,7 @@
     <link rel="shortcut icon" href={{ asset("favicon.png") }} />
 
     <title>Login</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Bootstrap core CSS -->
     <link href = {{ asset("assets/bootstrap/css/bootstrap.css") }} rel="stylesheet" />
