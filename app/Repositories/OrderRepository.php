@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Support\Collection;
 
 class OrderRepository extends AbstractRepository
@@ -45,6 +46,11 @@ class OrderRepository extends AbstractRepository
 
         $joins = collect();
 
+        if($filters['user_id']){
+            $this->addJoin($joins, 'users', 'orders.user_id', 'users.id');
+            $query->where('users.id', $filters['user_id']);
+        }
+
         $joins->each(function ($item, $key) use (&$query) {
             $item = json_decode($item);
             $query->join($key, $item->first, '=', $item->second, $item->join_type);
@@ -55,6 +61,17 @@ class OrderRepository extends AbstractRepository
         }
 
         return $query->orderBy('orders.id');
+    }
+
+    public function getByUserId($user_id)
+    {
+        return $this->search(['user_id' => $user_id])->get()->first();
+    }
+
+    public function associateProduct(Order $order, Product $product)
+    {
+        $order->product()->associate($product);
+        return $order->save();
     }
 
 }
