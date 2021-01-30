@@ -37,4 +37,6 @@ Route::group(['namespace' => 'App\Http\Controllers', 'middleware' => ['auth']], 
     Route::resource('orders', 'OrderController', ['only' => ['index']])->middleware('role:Admin');
     Route::get('customer/order', ['as' => 'customer_order', 'uses' => 'CustomerOrderController@index']);
     Route::get('pay_order', ['as' => 'pay_order', 'uses' => 'PaymentController@show']);
+    Route::get('process_pay', ['as' => 'process_pay', 'uses' => 'PaymentController@process']);
+    Route::get('update/order/state', ['as' => 'update_order_state', 'uses' => 'PaymentController@updateOrderState']);
 });
