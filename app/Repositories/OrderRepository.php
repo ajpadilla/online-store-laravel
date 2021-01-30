@@ -46,7 +46,7 @@ class OrderRepository extends AbstractRepository
 
         $joins = collect();
 
-        if($filters['user_id']){
+        if(isset($filters['user_id'])){
             $this->addJoin($joins, 'users', 'orders.user_id', 'users.id');
             $query->where('users.id', $filters['user_id']);
         }
@@ -70,6 +70,7 @@ class OrderRepository extends AbstractRepository
 
     public function associateProduct(Order $order, Product $product)
     {
+        $order->amount = $product->price;
         $order->product()->associate($product);
         return $order->save();
     }
