@@ -42,15 +42,17 @@ class ProductController extends Controller
             $product = $this->productRepository->find($id);
 
             /** @var Order $order */
-            $order = $this->productService->buy($user, $product);
+            $order = $this->productService->addProductToOrder($user, $product);
 
             DB::commit();
+
+            return redirect()->route('customer_order');
+
         } catch (Exception $exception) {
             DB::rollBack();
 
             return redirect()->back()->withErrors($exception->getMessage());
         }
 
-        return view('layouts.orders.customer_order', compact('order'));
     }
 }
