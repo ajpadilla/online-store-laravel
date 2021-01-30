@@ -3,13 +3,24 @@
 @section('title') Pay Order@stop
 
 @section('content')
+
+    <h1>Order Detail</h1>
+
+    <div class="row">
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                <div id="login-alert" class="alert alert-danger col-sm-12">{{ $error }}</div>
+            @endforeach
+        @endif
+    </div>
+
     <section class="invoice">
         <!-- title row -->
         <div class="row">
             <div class="col-xs-12">
                 <h2 class="page-header">
                     <i class="fa fa-globe"></i> Trust point Co.
-                    <small class="pull-right">Date: 2017/01/09</small>
+                    <small class="pull-right">Date: {{ $order->created_at }}</small>
                 </h2>
             </div><!-- /.col -->
         </div>
@@ -25,21 +36,20 @@
             <div class="col-sm-4 invoice-col">
                 To
                 <address>
-                    <strong>
-                        Shahid                                    </strong>
+                    <strong>{{$order->customer_name}} {{ $order->customer_last_name  }}</strong>
                     <br>
-                    Address:
-                    Kollanpur                                    <br>
                     Phone:
-                    123456789                                   <br>
-                    Email:ggggg@gmail.com                                </address>
+                    {{$order->customer_mobile}}
+                    <br>
+                    Email:{{$order->customer_email}}
+                </address>
             </div><!-- /.col -->
             <div class="col-sm-4 invoice-col">
-                <b>Invoice #007612</b><br>
+                <b>Invoice #{{ $order->id }}</b><br>
                 <br>
-                <b>Order ID:</b> 4F3S8J<br>
-                <b>Payment Due:</b> 2/22/2014<br>
-                <b>Account:</b> 968-34567
+                <b>Order ID:</b> {{ $order->id }}<br>
+                <b>Payment Due:</b> {{$order->created_at->addDays(1)}}<br>
+                <b>Order Status:</b> <a href="#" class="btn btn-primary"><i class="icon-pencil"></i>{{$order->status}}</a><br>
             </div><!-- /.col -->
         </div><!-- /.row -->
 
@@ -52,17 +62,15 @@
                         <th>Qty</th>
                         <th>Product</th>
                         <th>Price</th>
-                        <th>Sub Total</th>
                     </tr>
                     </thead>
                     <tbody>
 
 
                     <tr>
-                        <td>2</td>
-                        <td>18</td>
-                        <td>12500</td>
-                        <td>25000</td>
+                        <td>{{ $order->getTotalProducts() }}</td>
+                        <td>{{ $order->getProductName() }}</td>
+                        <td>{{ $order->getProductPrice() }}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -72,15 +80,12 @@
         <div class="row">
             <!-- accepted payments column -->
             <div class="col-md-12">
-                <p class="lead">Amount Due 2/22/2014</p>
                 <div class="table-responsive">
                     <table class="table">
                         <tbody>
-
-
                         <tr>
                             <th>Total:</th>
-                            <td> 50000</td>
+                            <td>{{ $order->amount }} COP</td>
                         </tr>
                         </tbody>
                     </table>
@@ -88,13 +93,19 @@
             </div><!-- /.col -->
         </div><!-- /.row -->
 
-        <!-- this row will not appear when printing -->
-        <div class="row no-print">
-            <div class="col-xs-12">
-                <a href="" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
-                <button class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> Submit Payment</button>
-                <button class="btn btn-primary pull-right" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>
-            </div>
-        </div>
+        @if($order->hasProducts())
+            <!-- this row will not appear when printing -->
+                <div class="row no-print">
+                    <div class="col-xs-12">
+                        @if($order->getFirstPaymentAttemptState()== 'INITIAL')
+                            <a href="{{ route('process_pay') }}" class="btn btn-success"><i class="fa fa-money"></i> Pay</a>
+                        @elseif($order->getFirstPaymentAttemptState() == 'PENDING')
+                            <a href="{{ url($order->getFirstPaymentAttemptUrlProcess()) }}" class="btn btn-success"><i class="fa fa-money"></i> Process Pay</a>
+                        @elseif($order->getFirstPaymentAttemptState() == 'REJECTED' || $order->getFirstPaymentAttemptState() == 'FAILED')
+                            <a href="{{ route('process_pay') }}" class="btn btn-success"><i class="fa fa-money"></i>Retry Pay</a>
+                        @endif
+                    </div>
+                </div>
+        @endif
     </section>
 @stop

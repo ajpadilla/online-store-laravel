@@ -16,25 +16,25 @@
                 <th>Customer name</th>
                 <th>Customer email</th>
                 <th>Customer document number</th>
+                <th>Product</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Product</th>
-                <th>Actions</th>
+                <!--<th>Actions</th>-->
             </tr>
             </thead>
             <tbody>
             @forelse ($orders as $order)
                 <tr>
                     <td>{{ $order->id }}</td>
-                    <td>{{ $order->customer_name }}</td>
-                    <td>{{ $order->custom_email }}</td>
+                    <td>{{$order->customer_name}} {{ $order->customer_last_name  }}</td>
+                    <td>{{ $order->customer_email }}</td>
                     <td>{{ $order->customer_document_number}}</td>
-                    <td>{{$order->amount}}</td>
+                    <td>{{ $order->getProductName() }}</td>
+                    <td>{{$order->amount}} COP</td>
                     <td><a href="#" class="btn btn-primary"><i class="icon-pencil"></i>{{$order->status}}</a></td>
-                    <td>Product</td>
-                    <td>
+                    <!--<td>
                         <a href="#" class="btn btn-primary"><i class="icon-pencil"></i>Show</a>
-                    </td>
+                    </td>-->
                 </tr>
             @empty
                 <p>No orders</p>

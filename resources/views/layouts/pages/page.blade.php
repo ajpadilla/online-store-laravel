@@ -45,9 +45,9 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"> {{ auth()->user()->name  }} <b class="fa fa-angle-down"></b></a>
                 <ul class="dropdown-menu">
-                    <li><a href="#"><i class="fa fa-fw fa-user"></i> Edit Profile</a></li>
+                    <!--<li><a href="#"><i class="fa fa-fw fa-user"></i> Edit Profile</a></li>
                     <li><a href="#"><i class="fa fa-fw fa-cog"></i> Change Password</a></li>
-                    <li class="divider"></li>
+                    <li class="divider"></li>-->
                     <li><a href="{{ route('logout') }}"><i class="fa fa-fw fa-power-off"></i> Logout</a></li>
                 </ul>
             </li>
@@ -62,10 +62,11 @@
                         <li><a href="{{route('dashboard')}}"><i class="fa fa-angle-double-right"></i>Products</a></li>
                         @if(@Auth::user()->hasRole('Admin'))
                             <li><a href="{{route('orders.index')}}"><i class="fa fa-angle-double-right"></i>List All Orders</a></li>
-                        @else
-                            <li><a href="{{route('customer_order')}}"><i class="fa fa-angle-double-right"></i>Customer Order</a></li>
                         @endif
-                        <li><a href="{{route('pay_order')}}"><i class="fa fa-angle-double-right"></i>Pay Order</a></li>
+                        <li><a href="{{route('customer_order')}}"><i class="fa fa-angle-double-right"></i>Customer Order</a></li>
+                        @if(@Auth::user()->orderHasProducts())
+                            <li><a href="{{route('pay_order')}}"><i class="fa fa-angle-double-right"></i>Pay Order</a></li>
+                        @endif
                     </ul>
                 </li>
                 <!--<li>
