@@ -12,6 +12,7 @@ class Order extends Model
     /** @var array  */
     protected $fillable = [
         'customer_name',
+        'customer_last_name',
         'customer_email',
         'customer_mobile',
         'customer_document_number',
@@ -22,9 +23,19 @@ class Order extends Model
         'product_id'
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at'
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function paymentAttempts()
@@ -37,13 +48,32 @@ class Order extends Model
         return $this->paymentAttempts()->count() ? $this->paymentAttempts()->first() : null;
     }
 
+    public function getFirstPaymentAttemptState()
+    {
+        return $this->paymentAttempts()->count() ? $this->paymentAttempts()->first()->state : null;
+    }
+
+    public function getFirstPaymentAttemptUrlProcess()
+    {
+        return $this->paymentAttempts()->count() ? $this->paymentAttempts()->first()->url_process : null;
+    }
+
     public function getProductName()
     {
         return $this->product ?  $this->product->name : null;
     }
 
+    public function getProductPrice()
+    {
+        return $this->product ?  $this->product->price : null;
+    }
+
     public function getTotalProducts()
     {
         return $this->product()->count();
+    }
+
+    public function hasProducts(){
+        return $this->getTotalProducts() > 0;
     }
 }
