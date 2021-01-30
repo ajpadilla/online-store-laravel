@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\Order;
 use App\Models\User;
 use App\Repositories\OrderRepository;
+use App\Repositories\PaymentAttemptRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,15 +22,24 @@ class RegisterController extends Controller
     /** @var OrderRepository  */
     private $orderRepository;
 
+    /** @var PaymentAttemptRepository */
+    private $paymentAttemptRepository;
+
     /**
      * RegisterController constructor.
      * @param UserRepository $userRepository
      * @param OrderRepository $orderRepository
+     * @param PaymentAttemptRepository $paymentAttemptRepository
      */
-    public function __construct(UserRepository $userRepository, OrderRepository $orderRepository)
+    public function __construct(
+        UserRepository $userRepository,
+        OrderRepository $orderRepository,
+        PaymentAttemptRepository $paymentAttemptRepository
+    )
     {
         $this->userRepository = $userRepository;
         $this->orderRepository = $orderRepository;
+        $this->paymentAttemptRepository = $paymentAttemptRepository;
     }
 
     public function show()
@@ -41,15 +52,19 @@ class RegisterController extends Controller
         try {
             DB::beginTransaction();
 
+            $full_name = $request->input('first_name').' '.$request->input('last_name');
+
             /** @var User $user */
             $user = $this->userRepository->create([
-                'name' =>  $request->input('fullname'),
+                'name' =>  $full_name,
                 'email' =>  $request->input('email'),
                 'password' => Hash::make($request->input('password'))
             ]);
 
-            $this->orderRepository->create([
+            /** @var Order $order */
+            $order = $this->orderRepository->create([
                 'customer_name' => $user->name,
+                'customer_last_name' => $request->input('last_name'),
                 'customer_email' => $user->email,
                 'customer_mobile' => $request->input('phone'),
                 'customer_document_number' => $request->input('document_number'),
@@ -59,6 +74,11 @@ class RegisterController extends Controller
                 'user_id' => $user->id,
             ]);
 
+            $this->paymentAttemptRepository->create([
+                'state' => 'INITIAL',
+                'order_id' => $order->id
+            ]);
+
             DB::commit();
         } catch (Exception $exception) {
             DB::rollBack();
@@ -66,6 +86,6 @@ class RegisterController extends Controller
             return redirect()->back()->withErrors($exception->getMessage());
         }
 
-        return redirect()->back()->with('alert_success', 'User Register Successful.');
+        return redirect()->back()->with('alert_success', 'User Register Successful. You can now login');
     }
 }
