@@ -31,7 +31,7 @@ class ProductService
      * @return Order
      * @throws Exception
      */
-    public function buy(User $user, Product $product)
+    public function addProductToOrder(User $user, Product $product)
     {
         /** @var Order $order */
         if(!$order = $this->orderRepository->getByUserId($user->id)){
