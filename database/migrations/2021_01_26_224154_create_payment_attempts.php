@@ -15,8 +15,8 @@ class CreatePaymentAttempts extends Migration
     {
         Schema::create('payment_attempts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('external_id');
-            $table->string("url_process");
+            $table->unsignedBigInteger('external_id')->nullable();
+            $table->string("url_process")->nullable();
             $table->string("state");
             $table->unsignedBigInteger('order_id');
             $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade')->onDelete('cascade');
