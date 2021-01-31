@@ -1,63 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Herramientas necesarias
 
-## About Laravel
+Instalar Docker
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## .env
+Crear nuevo archivo .env y copiar el contenido del archivo .env.example. 
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Crear contenedores docker-compose
 
-## Learning Laravel
+Ejecute  ```docker-compose build``` para levantar los contenedores del proyecto 
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Uso con Docker
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Abra el contenedor de la aplicacion e instale todas las dependencias ejecutando: 
+```
+docker-compose exec app sh
+```
 
-## Laravel Sponsors
+Ejecute dentro del contenedor app 
+```
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Crear nueva key dentro del contenedor app 
+```
+php artisan key:generate
+```
 
-### Premium Partners
+Luego ir a `http://localhost:8089/` donde aparecera el formulario para logir/resgistro de usuario.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/)**
-- **[OP.GG](https://op.gg)**
+## Ejecución de contenedor mariadb 
+Ejecute ```docker-compose exec mariadb bash``` para entrar al contenedor.
 
-## Contributing
+Dentro del contenedor, inicie sesión en la cuenta administrativa root de MySQL:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```mysql -u root -p```
 
-## Code of Conduct
+Se le solicitará la contraseña que estableció para la cuenta root de MySQL durante la instalación en el archivo docker-compose.
+user: root, password:qweasd123.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Comience revisando la base de datos llamada laravel, que definió en el archivo docker-compose. Ejecute el comando ```show databases``` para verificar las bases de datos existentes:
 
-## Security Vulnerabilities
+A demas Cree una nueva base de datos llamada laravel_testing, para correr el entorno de pruebas.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+A continuación, cree la cuenta de usuario que tendrá permisos de acceso a esta base de datos.
 
-## License
+```GRANT ALL ON laravel.* TO 'root'@'%' IDENTIFIED BY 'qweasd123'```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# online-store-laravel
+Elimine los privilegios para notificar los cambios al servidor MySQL:
+
+```FLUSH PRIVILEGES;```
+
+Cierre MySQL:
+
+```EXIT;```
+
+Por último, cierre el contenedor:
+
+##Migrar datos
+Pruebe la conexión con MySQL ejecutando el comando Laravel ```php artisan migrate```, dentro del contenedor app y se cargaran todas la tablas definidas en las migraciones para la base de datos laravel.
+
+
+## Ejecutar seeding
+
+Abra el contenedor de la aplicación ``` docker-compose exec app sh``` y corras los seed para cargar los datos de prueba ejecutando: 
+```php artisan db:seed```.
+
+## Ejecución de pruebas
+Instale las dependencias si no lo ha hecho anteriormente:
+
+```
+composer install
+```
+
+Abra el contenedor de la aplicacion: 
+```
+docker-compose exec app /bin/sh
+```
+
+Correr migraciones para la base de datos de prueba, dentro del conenetor aplicacion ejecutando:
+
+```php artisan migrate --database=testing_db```
+
+## Ejecutar todas las pruebas PHPUnit 
+Entrar al contenedor de la aplicacion ejecute ``` ./vendor/bin/phpunit ``` para correr todas la pruebas que se encuentran dentro de Tests\Unit\Repositories Y Tests\Unit\Services;
+
+Puede filtrar cada prueba pasando el nombre de la misma, al parametro --filter, ejemplo: 
+
+```
+./vendor/bin/phpunit  --filter test_create_a_new_user
+```
+
+Adicional, puede puede utilizar el comando ```php artisan test``` para ejecutar las pruebas, el cual proporciona informes mas detallados para facilitar el desarrollo y la depuración.
+
+Detener a los contenedores:
+```
+docker-compose stop
+```
+
+Dando de baja a los contenedores: 
+
+```
+docker-compose down
+```
+
