@@ -37,7 +37,7 @@ Dentro del contenedor, inicie sesión en la cuenta administrativa root de MySQL:
 
 ```mysql -u root -p```
 
-Se le solicitará la contraseña que estableció para la cuenta root de MySQL durante la instalación en el archivo docker-compose.
+Se le solicitará la contraseña que estableció para la cuenta root de MySQL durante la instalación en el archivo docker-compose.yml.
 user: root, password:qweasd123.
 
 Comience revisando la base de datos llamada laravel, que definió en el archivo docker-compose. Ejecute el comando ```show databases``` para verificar las bases de datos existentes:
